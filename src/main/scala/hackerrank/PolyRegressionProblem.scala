@@ -8,7 +8,7 @@ import fs2._
 import scala.annotation.tailrec
 
 object PolyRegressionProblem extends App {
-  val learningRate = 1
+  val learningRate = 1d
 
   val data: Stream[IO, (Vector[Double], Double)] = io.file
     .readAll[IO](Paths.get("src/main/resources/testdata.txt"), 4096)
@@ -29,10 +29,7 @@ object PolyRegressionProblem extends App {
     * */
     val all: Vector[(Vector[Double], Double)] = data.runLog.unsafeRunSync()
     val (xs, ys): (Vector[Vector[Double]], Vector[Double]) = all.unzip
-    val thetas = Vector.fill(xs.size + 1)(0d)
-
-    println(xs)
-    println(ys)
+    val thetas = Vector.fill(xs.head.size + 1)(0d)
 
     val readyThetas = go(thetas, xs, ys)
     hypo(readyThetas)
@@ -47,8 +44,8 @@ object PolyRegressionProblem extends App {
   @tailrec
   def go(thetas: Vector[Double], X: Vector[Vector[Double]], Y: Vector[Double]): Vector[Double] = {
     val x0 = Vector.fill(X.head.size)(1d)
-    val xs: Vector[Vector[Double]] = x0 +: X
-    val err = 0.0001d
+    val xs = x0 +: X
+    val err = 0.000001d
 
     val updThetas = for {
       (θ, xjs) ← thetas zip xs
@@ -59,9 +56,9 @@ object PolyRegressionProblem extends App {
         diff = hypo(thetas)(xi) - yi
       } yield diff * xj
     } yield θ - summ.sum * coef
-    if ((thetas zip updThetas) forall { case (o, n) ⇒ o - n < err }) updThetas
+    if ((thetas zip updThetas) forall { case (o, n) ⇒ Math.abs(o - n) < err }) updThetas
     else {
-      println("refined model: $updThetas")
+//      println(printlns"refined model: $updThetas")
       go(updThetas, X, Y)
     }
   }
