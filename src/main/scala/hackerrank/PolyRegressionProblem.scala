@@ -2,6 +2,9 @@ package hackerrank
 
 import java.nio.file.Paths
 
+import breeze.linalg.{DenseVector, Matrix}
+import breeze.optimize.FirstOrderMinimizer
+import breeze.optimize.FirstOrderMinimizer.State
 import cats.effect.IO
 import fs2._
 
@@ -15,7 +18,7 @@ object PolyRegressionProblem extends App {
     .readAll[IO](Paths.get("src/main/resources/testdata.txt"), 4096)
     .through(text.utf8Decode)
     .through(text.lines)
-    .map(Data.vectorized)
+    .map(ReadData.vectorized)
 
   // approximation y = B0 + B1*x1 + B2*x2
   // y = B0 + [Xt]*[B]
@@ -27,6 +30,8 @@ object PolyRegressionProblem extends App {
     val thetas = Vector.fill(xs.head.size + 1)(0d)
 
     val readyThetas = go(thetas, xs, ys)
+    val totalLoss = all.map { case (xx, y) ⇒ hypo(readyThetas)(xx) - y } .sum
+    println( s"Total loss: $totalLoss" )
     hypo(readyThetas)
   }
 
@@ -46,7 +51,8 @@ object PolyRegressionProblem extends App {
     } yield {
       θj - l * coef
     }
-
+    val totalLoss = (X zip Y).map {case (xx, y) ⇒ hypo(updThetas.toVector)(xx) - y} .sum
+    println(s"updated model: $totalLoss" )
     if ((thetas zip updThetas) forall { case (o, n) ⇒ Math.abs(o - n) < err }) updThetas.toVector
     else go(updThetas.toVector, X, Y)
   }
@@ -59,17 +65,16 @@ object PolyRegressionProblem extends App {
 
   val predict = train(data)
 
-
   println(predict(Vector(0.44, 0.68))) // should be 511.14
   println(predict(Vector(1.0, 0.23)))  // should be 726.69
 
-  println(predict(Vector(0.05, 0.54))) // should be 180.38
-  println(predict(Vector(0.91, 0.91))) // should be 1312.07
-  println(predict(Vector(0.31, 0.76))) // should be 440.13
-  println(predict(Vector(0.51, 0.31))) // should be 343.72
+//  println(predict(Vector(0.05, 0.54))) // should be 180.38
+//  println(predict(Vector(0.91, 0.91))) // should be 1312.07
+//  println(predict(Vector(0.31, 0.76))) // should be 440.13
+//  println(predict(Vector(0.51, 0.31))) // should be 343.72
 }
 
-object Data {
+object ReadData {
   def vectorized(s: String): (Vector[Double], Double) = {
     val x = s.split(' ').map(_.toDouble).toVector
     (x.init, x.last)

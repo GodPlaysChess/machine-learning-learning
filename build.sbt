@@ -26,5 +26,9 @@ libraryDependencies += "co.fs2" %% "fs2-io" % "0.10.0-M6"
 
 libraryDependencies += "org.typelevel" %% "cats-core" % "1.0.0-MF"
 
+libraryDependencies += "org.scalactic" %% "scalactic" % "3.0.1"
+
+libraryDependencies += "org.scalatest" %% "scalatest" % "3.0.1" % "test"
+
 
 resolvers += "Sonatype Releases" at "https://oss.sonatype.org/content/repositories/releases/"
