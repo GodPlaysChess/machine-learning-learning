@@ -3,8 +3,12 @@ package apitests
 import breeze.linalg.DenseVector
 import org.scalatest.{FlatSpec, Matchers}
 import breeze.linalg._
+import breeze.linalg.eig.Eig
+import breeze.linalg.eigSym.EigSym
+import breeze.linalg.svd.SVD
 import breeze.numerics._
 import breeze.plot._
+import org.apache.commons.math3.linear.EigenDecomposition
 
 
 class SimpleMatrixOperationTests extends FlatSpec with Matchers with VectorsFixture {
@@ -36,6 +40,20 @@ class SimpleMatrixOperationTests extends FlatSpec with Matchers with VectorsFixt
     mat1(0, 0 to 1) shouldBe DenseVector(1, 1).t
   }
 
+  it should "calculate eigenvalues and eigenvectors" in {
+    val Eig(values, complex, vectors) = eig(mat3.map(_.toDouble))
+    println(values)
+    println(complex)
+    println(vectors)
+  }
+
+  it should "calculate singular value decomposition" in {
+    val SVD(left, singular, right) = svd(mat1.map(_.toDouble))
+    println(left)
+    println(singular)
+    println(right)
+  }
+  
   "Plot" should "be nice" in {
     val f = Figure()
     val p = f.subplot(0)
@@ -60,4 +78,6 @@ trait VectorsFixture {
   val mat1 = DenseMatrix(DenseVector(1, 1, 1), DenseVector(2, 2, 2))
 
   val mat2 = DenseMatrix(DenseVector(1, 1), DenseVector(2, 2), DenseVector(3, 3))
+
+  val mat3 = DenseMatrix((1, 2, 3), (4, 5, 6), (7, 8, 9))
 }
