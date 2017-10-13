@@ -43,16 +43,15 @@ object BreezeGradientDescent extends App {
   def refineModel(thetas: DenseVector[Double], inputMatrix: DenseMatrix[Double]): DenseVector[Double] = {
     val coef: Double = learningRate / inputMatrix.rows
 
-
-    val descent: Transpose[DenseVector[Double]] = (for {
+    val descent: DenseVector[Double] = (for {
       i ← 0 until inputMatrix.rows
       rowi: Transpose[DenseVector[Double]] = inputMatrix(i, ::)
       loss = (thetas + -1d) * rowi // this is a number, so need to downcast from matrix
       l: Double = loss(0, 0)
-      x: Transpose[DenseVector[Double]] = inputMatrix(i, 0 until (inputMatrix.cols - 1)) // taking into account only Y part
-    } yield x * l).reduce(_ + _)
+      x: Transpose[DenseVector[Double]] = inputMatrix(i, 0 until (inputMatrix.cols - 1)) // taking into account only X part
+    } yield x.t * l).reduce(_ + _)
 
-    val updThetas: DenseVector[Double] = thetas - descent.t * coef
+    val updThetas: DenseVector[Double] = thetas - descent * coef
 
     if ((thetas - updThetas) forall { s ⇒ Math.abs(s) < err }) updThetas
     else refineModel(updThetas, inputMatrix)
