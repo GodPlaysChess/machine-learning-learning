@@ -35,36 +35,23 @@ object BreezeGradientDescent extends App {
     readyThetas.t * xs
   }
 
-  def matLoss(thetas: DenseVector[Double], dataset: DenseMatrix[Double]): DenseVector[Double] = {
-    // broadcast those thetas and multiply on dataset
-//    val lossVector: DenseVector[Double] = DenseMatrix(thetas + (-1d)) dot dataset
-//    lossVector
-    ???
-  }
-
+              /*
+              * Algorithm:
+              * Tj := Tj - a/m * Sum( (hypo(xi) - yi)*xji )
+              * */
   @tailrec
   def refineModel(thetas: DenseVector[Double], inputMatrix: DenseMatrix[Double]): DenseVector[Double] = {
     val coef = learningRate / inputMatrix.rows
 
-    val updThetas: DenseVector[Double] = ??? /*DenseVector(for {
-      (j, θj) ← thetas.activeIterator
-      l = loss(j, thetas, inputMatrix)
-    } yield θj - l * coef
-    )*/
+    val updThetas: DenseVector[Double] = thetas - coef * descent
+    val descent: DenseVector[Double] = (for {
+      i ← 0 until inputMatrix.rows
+      rowi: Transpose[DenseVector[Double]] = inputMatrix(i, ::)
+      loss = (thetas + -1d) * rowi
+    } yield loss * rowi.t.slice(0, rowi.t.length - 1)).map(_.sum)
 
     if ((thetas - updThetas) forall { s ⇒ Math.abs(s) < err }) updThetas
     else refineModel(updThetas, inputMatrix)
-  }
-
-  private def loss(j: Int, thetas: DenseVector[Double], inputMatrix: DenseMatrix[Double]): Double = {
-    matLoss(thetas, inputMatrix)
-//    for {
-//      i ← 0 to inputMatrix.rows
-//
-//    }
-//    val l: DenseVector[Double] = (thetas + (-1d)) dot inputMatrix(j)
-//    val xj = 1d +: inputMatrix(j)
-    ???
   }
 
   //

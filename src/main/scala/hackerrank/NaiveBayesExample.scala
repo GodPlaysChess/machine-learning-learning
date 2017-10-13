@@ -1,0 +1,5 @@
+package hackerrank
+
+class NaiveBayesExample {
+
+}
