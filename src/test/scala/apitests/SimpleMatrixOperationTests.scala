@@ -37,6 +37,7 @@ class SimpleMatrixOperationTests extends FlatSpec with Matchers with VectorsFixt
   it should "give cols and rows" in {
     mat1(::, 0) shouldBe DenseVector(1, 2)
     mat1(0, ::) shouldBe DenseVector(1, 1, 1).t
+    println(mat1(0, ::).t * 2)
     mat1(0, 0 to 1) shouldBe DenseVector(1, 1).t
   }
 
@@ -53,16 +54,12 @@ class SimpleMatrixOperationTests extends FlatSpec with Matchers with VectorsFixt
     println(singular)
     println(right)
   }
-  
+
+  it should "prepend the column" in {
+    DenseMatrix.horzcat(DenseVector.zeros[Int](2).toDenseMatrix.t, mat1) shouldBe DenseMatrix(DenseVector(0, 1, 1, 1), DenseVector(0, 2, 2, 2))
+  }
+
   "Plot" should "be nice" in {
-    val f = Figure()
-    val p = f.subplot(0)
-    val x = linspace(0.0,1.0)
-    p += plot(x, x :^ 2.0)
-    p += plot(x, x :^ 3.0, '.')
-    p.xlabel = "x axis"
-    p.ylabel = "y axis"
-    f.saveas("lines.png") // save current figure as a .png, eps and pdf also supported
     1 shouldBe 1
   }
 
