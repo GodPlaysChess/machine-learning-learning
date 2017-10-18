@@ -1,13 +1,10 @@
-package hackerrank
+package algorithms
 
 import java.nio.file.Paths
 
-import breeze.linalg.{DenseMatrix, DenseVector}
+import breeze.linalg._
 import cats.effect.IO
 import fs2._
-import breeze.linalg._
-import breeze.numerics._
-import breeze.plot._
 
 import scala.annotation.tailrec
 
@@ -51,8 +48,6 @@ object BreezeGradientDescent extends App {
 
     readyThetas
   }
-
-
               /*
               * Algorithm:
               * Tj := Tj - a/m * Sum( (hypo(xi) - yi)*xji )
